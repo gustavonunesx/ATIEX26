@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Do Caos à Clareza</title>
+<meta name="description" content="Veja como um desenvolvedor transforma dados soltos em informação útil.">
+<style>
+:root{
+  --bg:#0b0f14; --panel:#121923; --line:#223044; --text:#e6edf5; --muted:#8a9ab0;
+  --accent:#34d399; --accent2:#60a5fa; --warn:#f87171; --amber:#fbbf24;
+  --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6}
+section{padding:96px 20px}
+.wrap{max-width:1080px;margin:0 auto}
+h1{font-size:clamp(2.4rem,7vw,4.6rem);line-height:1.05;letter-spacing:-.03em}
+h2{font-size:clamp(1.7rem,4vw,2.5rem);letter-spacing:-.02em;margin-bottom:12px}
+.tag{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:block}
+.lead{color:var(--muted);max-width:60ch;margin-bottom:32px}
+.btn{display:inline-block;background:var(--accent);color:#04130d;font-weight:700;border:0;border-radius:10px;padding:14px 26px;font-size:1rem;cursor:pointer;text-decoration:none;font-family:inherit}
+.btn:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+
+/* hero */
+#hero{min-height:92vh;display:flex;align-items:center;background:radial-gradient(900px 400px at 80% 10%,#16324a55,transparent),var(--bg)}
+#hero h1 em{font-style:normal;color:var(--accent)}
+#hero p{color:var(--muted);font-size:1.15rem;max-width:56ch;margin:22px 0 34px}
+
+/* caos */
+#caos{background:#0e0b0b;border-block:1px solid #2a1717}
+#caos .tag{color:var(--warn)}
+.tablebox{border:1px solid #3a2222;border-radius:12px;overflow:auto;max-height:460px;background:#120d0d}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+th,td{padding:7px 14px;text-align:left;border-bottom:1px solid #2a1c1c}
+th{position:sticky;top:0;background:#1b1212;color:var(--muted);font-weight:600}
+td{color:#cdb8b8}
+td.empty{color:#6b4a4a;font-style:italic}
+.caption{margin-top:16px;color:var(--warn);font-family:var(--mono);font-size:.9rem}
+
+/* pipeline */
+#pipe .term{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;font-family:var(--mono);font-size:.88rem;min-height:190px;margin:24px 0}
+.term .ln{opacity:0;animation:in .4s forwards;padding:2px 0}
+.term .ln b{color:var(--accent)}
+.term .ln span{color:var(--muted)}
+.term .idle{color:var(--muted)}
+@keyframes in{to{opacity:1}}
+
+/* dashboard */
+#dashsec{background:linear-gradient(#0b0f14,#0d1620)}
+#dash{opacity:0;transform:translateY(16px);transition:.7s}
+#dash.on{opacity:1;transform:none}
+.locked{border:1px dashed var(--line);border-radius:14px;padding:60px 20px;text-align:center;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.kpi small{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}
+.kpi strong{display:block;font-size:1.9rem;letter-spacing:-.02em;margin-top:4px}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.charts .wide{grid-column:1/-1}
+.card h3{font-size:.95rem;color:var(--muted);font-weight:600;margin-bottom:12px}
+.chartbox{position:relative;height:260px}
+.insights{margin-top:14px;display:grid;gap:10px}
+.insights div{border-left:3px solid var(--accent);padding:10px 16px;background:#34d3991a;border-radius:0 8px 8px 0}
+
+/* dev */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;counter-reset:s}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 18px;counter-increment:s}
+.step::before{content:"0" counter(s);font-family:var(--mono);color:var(--accent);font-size:.85rem}
+.step h3{margin:6px 0 8px;font-size:1.15rem}
+.step p{color:var(--muted);font-size:.9rem;margin-bottom:14px}
+.ba{font-family:var(--mono);font-size:.76rem;border-top:1px solid var(--line);padding-top:12px;word-break:break-word}
+.ba .b{color:var(--warn);text-decoration:line-through;text-decoration-color:#f8717166}
+.ba .a{color:var(--accent);display:block;margin-top:4px}
+
+footer{padding:40px 20px;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.term .ln{animation:none;opacity:1}#dash{transition:none}}
+</style>
+</head>
+<body>
+
+<header id="hero"><div class="wrap">
+  <span class="tag">ATIEX · Dados → Informação</span>
+  <h1>Dado solto não é <em>informação</em>.</h1>
+  <p>Toda empresa tem dados. Poucas têm respostas. Entre uma coisa e outra existe um desenvolvedor.</p>
+  <a class="btn" href="#caos">Ver o problema ↓</a>
+</div></header>
+
+<section id="caos"><div class="wrap">
+  <span class="tag">01 · O caos</span>
+  <h2>Isso é o que chega na mesa do dev.</h2>
+  <p class="lead">Exportação de vendas de três sistemas diferentes. Datas em vários formatos, cidades escritas de cinco jeitos, valores como texto, linhas repetidas, células vazias. Dá para tirar alguma decisão daqui?</p>
+  <div class="tablebox"><table id="raw"></table></div>
+  <p class="caption" id="rawcap"></p>
+</div></section>
+
+<section id="pipe"><div class="wrap">
+  <span class="tag">02 · A transformação</span>
+  <h2>Mesmos dados. Agora com tratamento.</h2>
+  <p class="lead">O código abaixo roda de verdade no seu navegador, sobre a tabela acima. Nada é pré-calculado.</p>
+  <button class="btn" id="run">▶ Tratar dados</button>
+  <div class="term" id="term"><div class="idle">$ aguardando execução…</div></div>
+</div></section>
+
+<section id="dashsec"><div class="wrap">
+  <span class="tag">03 · A clareza</span>
+  <h2>Os mesmos números, agora respondendo perguntas.</h2>
+  <p class="lead">Quanto vendemos? Quando? Onde? O quê? Cada gráfico abaixo nasce da tabela bagunçada.</p>
+  <div class="locked" id="locked">🔒 Rode o tratamento acima para desbloquear o dashboard.</div>
+  <div id="dash" hidden>
+    <div class="kpis" id="kpis"></div>
+    <div class="charts">
+      <div class="card wide"><h3>Receita por mês</h3><div class="chartbox"><canvas id="cMes"></canvas></div></div>
+      <div class="card"><h3>Receita por categoria</h3><div class="chartbox"><canvas id="cCat"></canvas></div></div>
+      <div class="card"><h3>Receita por cidade</h3><div class="chartbox"><canvas id="cCid"></canvas></div></div>
+    </div>
+    <div class="insights" id="insights"></div>
+  </div>
+</div></section>
+
+<section id="dev"><div class="wrap">
+  <span class="tag">04 · O que o desenvolvedor faz</span>
+  <h2>Cinco passos entre o ruído e a decisão.</h2>
+  <p class="lead">Exemplos reais extraídos da tabela lá de cima.</p>
+  <div class="steps" id="steps"></div>
+</div></section>
+
+<footer>Projeto ATIEX · dados 100% fictícios, gerados no navegador.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+/* ---------- dados brutos (determinísticos, propositalmente sujos) ---------- */
+const MESES = ['jan','fev','mar','abr','mai','jun'];
+const MESES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho'];
+const VARIANTES = {
+  cidade: {
+    'São Paulo':['São Paulo','sao paulo','SAO PAULO','S. Paulo ','SP'],
+    'Rio de Janeiro':['Rio de Janeiro','rio de janeiro ','RJ','RIO DE JANEIRO'],
+    'Curitiba':['Curitiba','curitiba','CURITIBA '],
+    'Belo Horizonte':['Belo Horizonte','belo horizonte','BH'],
+    'Recife':['Recife','recife','RECIFE']
+  },
+  categoria: {
+    'Eletrônicos':['Eletrônicos','eletronicos','ELETRONICO'],
+    'Roupas':['Roupas','roupa','ROUPAS '],
+    'Casa':['Casa','casa e jardim','CASA'],
+    'Livros':['Livros','livro','LIVROS']
+  }
+};
+const CLIENTES = ['Ana Souza','Bruno Lima','Carla Dias','Diego Rocha','Elisa Prado','Fábio Nunes','Gabi Alves','Hugo Reis'];
+
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const pad = n => String(n).padStart(2,'0');
+
+function fmtData(m,d,k){
+  return [`${pad(d)}/${pad(m)}/2026`,`2026-${pad(m)}-${pad(d)}`,`${pad(d)}-${pad(m)}-26`,`${d} ${MESES[m-1]} 2026`][k];
+}
+function fmtValor(v,k){
+  return ['R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2}),String(v),'R$'+v.toFixed(2).replace('.',','),String(v)][k];
+}
+function sujaCliente(n,i){return [n,n.toLowerCase(),n.toUpperCase(),' '+n][i%4]}
+
+function gerarBruto(){
+  const r = rng(42), rows = [];
+  for(let i=0;i<36;i++){
+    const m = 1+Math.floor(r()*6), d = 1+Math.floor(r()*28), k = i%4;
+    const cid = Object.keys(VARIANTES.cidade)[Math.floor(r()*5)];
+    const cat = Object.keys(VARIANTES.categoria)[Math.floor(r()*4)];
+    let v = Math.round((50+r()*2450)*100)/100; if(k===3) v = Math.round(v);
+    const vc = VARIANTES.cidade[cid], vk = VARIANTES.categoria[cat];
+    rows.push({
+      id: 1001+i,
+      data: fmtData(m,d,k),
+      cliente: sujaCliente(CLIENTES[Math.floor(r()*8)],i),
+      cidade: vc[(i+Math.floor(r()*9))%vc.length],
+      categoria: vk[(i+Math.floor(r()*9))%vk.length],
+      valor: fmtValor(v,k)
+    });
+  }
+  rows[5].valor = ''; rows[14].valor = 'n/a'; rows[22].data = '';
+  [3,11,19,27].forEach((idx,j)=>rows.splice(8+j*9,0,{...rows[idx]})); // duplicatas
+  return rows;
+}
+const RAW = gerarBruto();
+
+/* ---------- tratamento ---------- */
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[.\s]+/g,' ').trim();
+const ALIAS = {};
+for(const grupo of Object.values(VARIANTES))
+  for(const [canon,vars] of Object.entries(grupo)) vars.forEach(v=>ALIAS[norm(v)]=canon);
+
+function parseData(s){
+  s = s.trim(); let m;
+  if(m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)) return {y:+m[3],m:+m[2],d:+m[1]};
+  if(m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/)) return {y:+m[1],m:+m[2],d:+m[3]};
+  if(m=s.match(/^(\d{2})-(\d{2})-(\d{2})$/)) return {y:2000+ +m[3],m:+m[2],d:+m[1]};
+  if(m=s.match(/^(\d{1,2}) (\w{3}) (\d{4})$/)){const mi=MESES.indexOf(m[2]);return mi<0?null:{y:+m[3],m:mi+1,d:+m[1]}}
+  return null;
+}
+function parseValor(s){
+  s = s.replace(/[^\d.,-]/g,'');
+  if(s.includes(',')) s = s.replace(/\./g,'').replace(',','.');
+  const n = parseFloat(s); return isNaN(n) ? null : n;
+}
+const titulo = s => s.trim().toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
+const iso = d => d ? `${d.y}-${pad(d.m)}-${pad(d.d)}` : null;
+const lim = r => ({
+  id:r.id, data:iso(parseData(r.data)), cliente:titulo(r.cliente),
+  cidade:ALIAS[norm(r.cidade)]||r.cidade.trim(), categoria:ALIAS[norm(r.categoria)]||r.categoria.trim(),
+  valor:parseValor(r.valor)
+});
+
+function tratar(rows){
+  const vistos = new Set(), unicos = [];
+  rows.forEach(r=>{ if(!vistos.has(r.id)){vistos.add(r.id);unicos.push(r)} });
+  const limpos = unicos.map(lim);
+  const validos = limpos.filter(r=>r.data && r.valor!==null);
+  return {duplicadas:rows.length-unicos.length, descartadas:limpos.length-validos.length, validos};
+}
+
+/* ---------- render: tabela bruta ---------- */
+(function(){
+  const cols = ['id','data','cliente','cidade','categoria','valor'];
+  const cel = v => v==='' ? '<td class="empty">∅</td>' : `<td>${v}</td>`;
+  document.getElementById('raw').innerHTML =
+    '<thead><tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr></thead><tbody>'+
+    RAW.map(r=>'<tr>'+cols.map(c=>cel(c==='id'?'#'+r.id:r[c])).join('')+'</tr>').join('')+'</tbody>';
+  document.getElementById('rawcap').textContent = `${RAW.length} linhas · 0 insights.`;
+})();
+
+/* ---------- pipeline ao vivo ---------- */
+const brl = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+const soma = (arr,key) => arr.reduce((m,r)=>(m[r[key]]=(m[r[key]]||0)+r.valor,m),{});
+let charts = [];
+
+document.getElementById('run').addEventListener('click',async e=>{
+  const btn = e.target; btn.disabled = true;
+  const term = document.getElementById('term'); term.innerHTML = '';
+  const res = tratar(RAW);
+  const log = (h,t)=>new Promise(ok=>{
+    const d = document.createElement('div'); d.className='ln'; d.innerHTML=`<b>✔ ${h}</b> <span>${t}</span>`;
+    term.appendChild(d); setTimeout(ok,650);
+  });
+  await log('Leitura', `${RAW.length} linhas brutas carregadas`);
+  await log('Duplicatas', `${res.duplicadas} linhas repetidas removidas (chave: id)`);
+  await log('Padronização', 'datas → ISO, valores → número, cidades/categorias → nome canônico');
+  await log('Validação', `${res.descartadas} linhas sem data ou valor descartadas`);
+  await log('Resultado', `${res.validos.length} registros confiáveis prontos para análise`);
+  renderDash(res.validos);
+  btn.disabled = false; btn.textContent = '↻ Rodar de novo';
+});
+
+function renderDash(v){
+  const total = v.reduce((s,r)=>s+r.valor,0), maior = Math.max(...v.map(r=>r.valor));
+  const porMes = Array(6).fill(0); v.forEach(r=>porMes[+r.data.slice(5,7)-1]+=r.valor);
+  const porCat = soma(v,'categoria'), porCid = soma(v,'cidade');
+  const top = o => Object.entries(o).sort((a,b)=>b[1]-a[1])[0];
+  const pct = x => Math.round(x/total*100)+'%';
+
+  document.getElementById('kpis').innerHTML = [
+    ['Receita total',brl.format(total)],['Pedidos',v.length],
+    ['Ticket médio',brl.format(total/v.length)],['Clientes únicos',new Set(v.map(r=>r.cliente)).size]
+  ].map(([k,x])=>`<div class="card kpi"><small>${k}</small><strong>${x}</strong></div>`).join('');
+
+  const mi = porMes.indexOf(Math.max(...porMes)), [cid,cv] = top(porCid), [cat,kv] = top(porCat);
+  document.getElementById('insights').innerHTML = [
+    `<b>${MESES_FULL[mi]}</b> foi o melhor mês: ${brl.format(porMes[mi])} (${pct(porMes[mi])} da receita).`,
+    `<b>${cid}</b> concentra ${pct(cv)} da receita. Aqui está o maior mercado.`,
+    `<b>${cat}</b> lidera as categorias com ${pct(kv)} do total.`,
+    `A maior venda individual foi de <b>${brl.format(maior)}</b>, ${(maior/(total/v.length)).toFixed(1)}× o ticket médio.`
+  ].map(t=>`<div>${t}</div>`).join('');
+
+  document.getElementById('locked').hidden = true;
+  const dash = document.getElementById('dash'); dash.hidden = false;
+  requestAnimationFrame(()=>dash.classList.add('on'));
+
+  if(typeof Chart==='undefined') return;
+  charts.forEach(c=>c.destroy());
+  Chart.defaults.color = '#8a9ab0'; Chart.defaults.borderColor = '#223044';
+  const pal = ['#34d399','#60a5fa','#fbbf24','#f472b6','#a78bfa'];
+  const base = {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
+  const money = {ticks:{callback:x=>'R$ '+x.toLocaleString('pt-BR')}};
+  charts = [
+    new Chart('cMes',{type:'line',data:{labels:MESES_FULL,datasets:[{data:porMes,borderColor:pal[0],backgroundColor:'#34d39922',fill:true,tension:.3}]},options:{...base,scales:{y:money}}}),
+    new Chart('cCat',{type:'bar',data:{labels:Object.keys(porCat),datasets:[{data:Object.values(porCat),backgroundColor:pal[1],borderRadius:6}]},options:{...base,scales:{y:money}}}),
+    new Chart('cCid',{type:'doughnut',data:{labels:Object.keys(porCid),datasets:[{data:Object.values(porCid),backgroundColor:pal,borderWidth:0}]},options:{...base,plugins:{legend:{display:true,position:'bottom'}}}})
+  ];
+}
+
+/* ---------- passos do dev, com exemplos reais ---------- */
+(function(){
+  const dupId = RAW.find((r,i)=>RAW.findIndex(x=>x.id===r.id)!==i).id;
+  const semValor = RAW.find(r=>r.valor===''||r.valor==='n/a');
+  const sujaCid = RAW.find(r=>ALIAS[norm(r.cidade)]!==r.cidade);
+  const sujaData = RAW.find(r=>/[a-z]/.test(r.data));
+  const sujaVal = RAW.find(r=>r.valor.startsWith('R$ '));
+  const ba = (b,a)=>`<div class="ba"><span class="b">${b}</span><span class="a">→ ${a}</span></div>`;
+  const passos = [
+    ['Coletar','Juntar as fontes e carregar tudo num só lugar.',ba(`${RAW.length} linhas, 3 sistemas`,'1 conjunto de dados')],
+    ['Limpar','Remover repetições e padronizar o que está escrito de formas diferentes.',ba(`"${sujaCid.cidade}" · "${sujaData.data}"`,`${ALIAS[norm(sujaCid.cidade)]} · ${iso(parseData(sujaData.data))}`)],
+    ['Validar','Descartar ou sinalizar o que não dá para confiar.',ba(`#${semValor.id} valor: "${semValor.valor}"`,'linha descartada')],
+    ['Modelar','Converter texto em tipos de verdade e criar as métricas.',ba(`"${sujaVal.valor}"`,`${parseValor(sujaVal.valor)} (número)`)],
+    ['Visualizar','Transformar números em gráficos que respondem perguntas.',ba(`tabela de ${RAW.length} linhas`,'4 KPIs, 3 gráficos, 4 insights')]
+  ];
+  document.getElementById('steps').innerHTML = passos.map(([t,d,x])=>`<div class="step"><h3>${t}</h3><p>${d}</p>${x}</div>`).join('');
+})();
+</script>
+</body>
+</html>
