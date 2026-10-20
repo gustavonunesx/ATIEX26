@@ -117,16 +117,6 @@ h2{font-size:clamp(1.7rem,4vw,2.5rem);letter-spacing:-.02em;margin-bottom:12px}
 .tools input,.tools select{background:#0a0f16;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 12px;font:inherit;font-size:.85rem;min-width:0}
 .tools input{width:200px}
 
-/* dev */
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;counter-reset:s}
-.step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 18px;counter-increment:s}
-.step::before{content:"0" counter(s);font-family:var(--mono);color:var(--accent);font-size:.85rem}
-.step h3{margin:6px 0 8px;font-size:1.15rem}
-.step p{color:var(--muted);font-size:.9rem;margin-bottom:14px}
-.ba{font-family:var(--mono);font-size:.76rem;border-top:1px solid var(--line);padding-top:12px;word-break:break-word}
-.ba .b{color:var(--warn);text-decoration:line-through;text-decoration-color:#f8717166}
-.ba .a{color:var(--accent);display:block;margin-top:4px}
-
 footer{padding:40px 20px;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
 @media(max-width:760px){
   section{padding:72px 16px}
@@ -174,13 +164,6 @@ footer{padding:40px 20px;text-align:center;color:var(--muted);font-size:.85rem;b
   <p class="lead">Quanto vendemos? Quando? Onde? Estamos tendo lucro? O que precisa ser pago? Cada tela abaixo nasce das planilhas bagunçadas, e é interativa.</p>
   <div class="locked" id="locked2">🔒 Rode a migração acima para desbloquear o sistema.</div>
   <div class="appwrap" id="wrap2" hidden><div class="sys" id="sys2"></div></div>
-</div></section>
-
-<section id="dev"><div class="wrap">
-  <span class="tag">04 · O que o desenvolvedor faz</span>
-  <h2>Cinco passos entre o ruído e a decisão.</h2>
-  <p class="lead">Exemplos reais extraídos das planilhas lá de cima.</p>
-  <div class="steps" id="steps"></div>
 </div></section>
 
 <footer>Projeto ATIEX · dados 100% fictícios, gerados no navegador.</footer>
@@ -541,22 +524,6 @@ document.getElementById('run').addEventListener('click',async e=>{
   btn.disabled = false; btn.textContent = '↻ Rodar de novo';
 });
 
-/* ---------- passos do dev, com exemplos reais ---------- */
-(function(){
-  const semValor = RAW.find(r=>r.valor===''||r.valor==='n/a');
-  const sujaCid = RAW.find(r=>ALIAS[norm(r.cidade)]!==r.cidade);
-  const sujaData = RAW.find(r=>/[a-z]/.test(r.data));
-  const sujaVal = RAW.find(r=>r.valor.startsWith('R$ '));
-  const ba = (b,a)=>`<div class="ba"><span class="b">${b}</span><span class="a">→ ${a}</span></div>`;
-  const passos = [
-    ['Coletar','Juntar as planilhas e carregar tudo num só lugar.',ba('4 arquivos, 3 donos, 0 padrão','1 banco de dados')],
-    ['Limpar','Remover repetições e padronizar o que está escrito de formas diferentes.',ba(`"${sujaCid.cidade}" · "${sujaData.data}"`,`${ALIAS[norm(sujaCid.cidade)]} · ${iso(parseData(sujaData.data))}`)],
-    ['Validar','Descartar ou sinalizar o que não dá para confiar.',ba(`#${semValor.id} valor: "${semValor.valor}"`,'linha descartada')],
-    ['Modelar','Ligar produtos, estoque, vendas e contas; converter texto em tipos de verdade.',ba(`"${sujaVal.valor}"`,`${parseValor(sujaVal.valor)} (número)`)],
-    ['Construir','Entregar um sistema que substitui as planilhas.',ba('planilhas soltas','4 módulos, 4 KPIs, 4 gráficos, alertas de estoque')]
-  ];
-  document.getElementById('steps').innerHTML = passos.map(([t,d,x])=>`<div class="step"><h3>${t}</h3><p>${d}</p>${x}</div>`).join('');
-})();
 </script>
 </body>
 </html>
