@@ -31,6 +31,8 @@ h2{font-size:clamp(1.7rem,4vw,2.5rem);letter-spacing:-.02em;margin-bottom:12px}
 #hero{min-height:92vh;display:flex;align-items:center;background:radial-gradient(900px 400px at 80% 10%,#16324a55,transparent),var(--bg)}
 #hero h1 em{font-style:normal;color:var(--accent)}
 #hero p{color:var(--muted);font-size:1.15rem;max-width:56ch;margin:22px 0 34px}
+#hero p strong{color:var(--text)}
+.senai{display:block;width:min(100%,380px);height:auto;color:var(--accent);margin-bottom:28px}
 
 /* caos: planilhas soltas */
 #caos{background:#0e0b0b;border-block:1px solid #2a1717}
@@ -133,9 +135,18 @@ footer{padding:40px 20px;text-align:center;color:var(--muted);font-size:.85rem;b
 <body>
 
 <header id="hero"><div class="wrap">
+  <svg class="senai" viewBox="0 0 300 74" role="img" aria-label="SENAI">
+    <defs><mask id="senai-faixas">
+      <rect width="300" height="74" fill="#fff"/>
+      <rect y="24" width="300" height="4" fill="#000"/>
+      <rect y="36" width="300" height="4" fill="#000"/>
+      <rect y="48" width="300" height="4" fill="#000"/>
+    </mask></defs>
+    <text x="4" y="66" textLength="290" lengthAdjust="spacingAndGlyphs" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-style="italic" font-size="80" fill="currentColor" mask="url(#senai-faixas)">SENAI</text>
+  </svg>
   <span class="tag">ATIEX · Dados → Informação</span>
-  <h1>Dado solto não é <em>informação</em>.</h1>
-  <p>Toda empresa tem dados. Poucas têm respostas. Entre uma coisa e outra existe um desenvolvedor.</p>
+  <h1>Técnico em <em>Desenvolvimento de Sistemas</em></h1>
+  <p><strong>Dado solto não é informação.</strong> Toda empresa tem dados. Poucas têm respostas. Entre uma coisa e outra existe um desenvolvedor.</p>
   <a class="btn" href="#caos">Ver o problema ↓</a>
 </div></header>
 
