@@ -119,6 +119,12 @@ h2{font-size:clamp(1.7rem,4vw,2.5rem);letter-spacing:-.02em;margin-bottom:12px}
 .tools input,.tools select{background:#0a0f16;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 12px;font:inherit;font-size:.85rem;min-width:0}
 .tools input{width:200px}
 
+/* mercado: média salarial */
+.sal{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.sal-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;border-radius:10px;font-size:1.1rem}
+.sal-row:nth-child(even){background:#ffffff08}
+.sal-row strong{color:var(--amber);font-size:1.4rem;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
+
 footer{padding:40px 20px;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
 @media(max-width:760px){
   section{padding:72px 16px}
@@ -175,6 +181,19 @@ footer{padding:40px 20px;text-align:center;color:var(--muted);font-size:.85rem;b
   <p class="lead">Quanto vendemos? Quando? Onde? Estamos tendo lucro? O que precisa ser pago? Cada tela abaixo nasce das planilhas bagunçadas, e é interativa.</p>
   <div class="locked" id="locked2">🔒 Rode a migração acima para desbloquear o sistema.</div>
   <div class="appwrap" id="wrap2" hidden><div class="sys" id="sys2"></div></div>
+</div></section>
+
+<section id="mercado"><div class="wrap">
+  <span class="tag">04 · O mercado</span>
+  <h2>Média salarial por nível.</h2>
+  <p class="lead">Quem transforma dado em informação tem espaço para crescer. Veja como a média salarial evolui ao longo da carreira.</p>
+  <div class="sal">
+    <div class="sal-row"><span>Estágio</span><strong>R$ 2.586,84</strong></div>
+    <div class="sal-row"><span>Júnior</span><strong>R$ 5.060,34</strong></div>
+    <div class="sal-row"><span>Pleno</span><strong>R$ 8.466,52</strong></div>
+    <div class="sal-row"><span>Sênior</span><strong>R$ 14.607,85</strong></div>
+    <div class="sal-row"><span>Outro (Especialista, Tech Lead, Principal)</span><strong>R$ 20.601,64</strong></div>
+  </div>
 </div></section>
 
 <footer>Projeto ATIEX · dados 100% fictícios, gerados no navegador.</footer>
@@ -514,13 +533,9 @@ document.getElementById('run').addEventListener('click',async e=>{
     const d = document.createElement('div'); d.className='ln'; d.innerHTML=`<b>✔ ${h}</b> <span>${t}</span>`;
     term.appendChild(d); setTimeout(ok,600);
   });
-  await log('Leitura', `4 planilhas carregadas (vendas, estoque, contas a pagar, produtos)`);
-  await log('Duplicatas', `${res.duplicadas} vendas repetidas e 1 conta a pagar duplicada removidas`);
-  await log('Padronização', 'datas → ISO, valores → número, cidades/categorias → nome canônico');
-  await log('Produtos', `${PROD.length} produtos com código único, custo e preço definidos`);
-  await log('Estoque', 'quantidades "cinco" e "~40" convertidas e ligadas ao cadastro');
-  await log('Validação', `${res.descartadas} vendas sem data ou valor descartadas`);
-  await log('Resultado', `${res.validos.length} vendas + ${PROD.length} produtos + ${CONTAS.length} contas prontos no sistema`);
+  await log('Entendendo', '4 planilhas lidas (vendas, estoque, contas a pagar, produtos) e problemas identificados');
+  await log('Abstraindo', 'duplicatas removidas, datas, valores, cidades e categorias padronizados');
+  await log('Construindo', `${res.validos.length} vendas + ${PROD.length} produtos + ${CONTAS.length} contas prontos no sistema`);
 
   VENDAS = res.validos;
   RECEITA = Array(6).fill(0); VENDAS.forEach(r=>RECEITA[+r.data.slice(5,7)-1]+=r.valor);
